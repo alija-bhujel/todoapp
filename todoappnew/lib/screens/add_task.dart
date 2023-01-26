@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddTask extends StatefulWidget {
@@ -15,18 +16,23 @@ class _AddTaskState extends State<AddTask> {
   TextEditingController title = TextEditingController();
   TextEditingController description = TextEditingController();
 
-  add_Task_to_Firebase() {
+  add_Task_to_Firebase() async {
     FirebaseAuth auth = FirebaseAuth.instance;
-    final FirebaseFirestore user = await auth.currentUser  
+    final user = auth.currentUser;
     // final User? user = Auth().currentUser;                                                                           ;                                                      ();
-    String uid = user.uid;
-    var time =DateTime.now();
-    await Firestore.instance.collection('tasks').document.(uid).collection('mytasks').document(time.toString()).
-    setdata({'title':title.text,
-    'description':description.text,
-    'time':time.toString()});
-    Fluttertoast.showToast(msg:'Data Added');
-
+    final uid = user?.uid ?? 'null';
+    var time = DateTime.now();
+    await FirebaseFirestore.instance
+        .collection('tasks')
+        .doc(uid)
+        .collection('mytasks')
+        .doc(time.toString())
+        .set({
+      'title': title.text,
+      'description': description.text,
+      'time': time.toString()
+    });
+    Fluttertoast.showToast(msg: 'Data Added');
   }
 
   @override
@@ -38,7 +44,7 @@ class _AddTaskState extends State<AddTask> {
         child: Column(
           children: [
             Container(
-              child: const TextField(
+              child: TextField(
                 controller: title,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(), labelText: 'Enter Title:'),
@@ -46,7 +52,7 @@ class _AddTaskState extends State<AddTask> {
             ),
             const SizedBox(height: 10),
             Container(
-              child: const TextField(
+              child: TextField(
                 controller: description,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),

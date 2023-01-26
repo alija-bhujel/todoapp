@@ -18,13 +18,12 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-  void getuid(){
-   FirebaseAuth auth = FirebaseAuth.instance;
-   final FirebaseUser user = await auth.currentUser();
-   setState(() {
-     uid = user.uid;
-   });
-
+  void getuid() {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    final user = auth.currentUser;
+    setState(() {
+      uid = user?.uid ?? 'null';
+    });
   }
 
   Widget build(BuildContext context) {
@@ -38,22 +37,32 @@ class _HomeState extends State<Home> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         color: Colors.amber,
-        child: StreamBuilder(stream: FirebaseFirestore.instance.collection('tasks').doc(uid).collection('mytasks').snapshots(), 
-        builder: (context, snapshot){
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return
-              Center(child: CircularProgressIndicator(),);
-          }
-          else{
-            final docs = snapshot.data.docs;
-            return ListView.builder(itemCount:docs.length,itemBuilder: (context, index){
-             return Container(
-              height: 90,
-              decoration: BoxDecoration(color: Colors.blue,borderRadius: BorderRadius.circular(10)),
-              child: Column(children: [Text(docs[index]['title'])]));
-            });
-          }
-        }),
+        child: StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collection('tasks')
+                .doc(uid)
+                .collection('mytasks')
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else {
+                final docs = snapshot.data?.docs;
+                return ListView.builder(
+                    itemCount: docs?.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                          height: 90,
+                          decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(10)),
+                          child:
+                              Column(children: [Text(docs?[index]['title'])]));
+                    });
+              }
+            }),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
