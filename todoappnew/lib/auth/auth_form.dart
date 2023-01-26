@@ -36,7 +36,7 @@ class _AuthFormState extends State<AuthForm> {
       } else {
         authResult = await auth.createUserWithEmailAndPassword(
             email: email, password: password);
-        String uid = authResult.user.!uid;
+        String? uid = authResult.user?.uid ?? 'null';
         await FirebaseFirestore.instance
             .collection('users')
             .doc(uid)
